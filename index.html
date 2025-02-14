@@ -13,7 +13,6 @@
             overflow: hidden;
         }
         canvas {
-            background: url('your-texture.png');
             display: block;
             margin: auto;
         }
@@ -45,18 +44,33 @@
         canvas.width = 600;
         canvas.height = 400;
 
-        // Load textures
+        // Create image objects
         const runFrame1 = new Image();
-        runFrame1.src = 'https://cdn.discordapp.com/attachments/1321600535811326043/1340002950986338379/Untitled157_20250214184336.png';
-        
         const runFrame2 = new Image();
-        runFrame2.src = 'https://cdn.discordapp.com/attachments/1321600535811326043/1340003278112428153/Untitled157_20250214184350.png';
-        
         const idleFrame = new Image();
-        idleFrame.src = 'https://cdn.discordapp.com/attachments/1321600535811326043/1340002951862685799/Untitled158_20250214185302.png';
-        
         const heartTexture = new Image();
+
+        // Set image sources
+        runFrame1.src = 'https://cdn.discordapp.com/attachments/1321600535811326043/1340002950986338379/Untitled157_20250214184336.png';
+        runFrame2.src = 'https://cdn.discordapp.com/attachments/1321600535811326043/1340003278112428153/Untitled157_20250214184350.png';
+        idleFrame.src = 'https://cdn.discordapp.com/attachments/1321600535811326043/1340002951862685799/Untitled158_20250214185302.png';
         heartTexture.src = 'https://cdn.discordapp.com/attachments/1321600535811326043/1340002951862685799/Untitled158_20250214185302.png';
+
+        // Wait until all images are loaded
+        let imagesLoaded = 0;
+        const totalImages = 4;
+        
+        function checkImagesLoaded() {
+            imagesLoaded++;
+            if (imagesLoaded === totalImages) {
+                startGame();
+            }
+        }
+
+        runFrame1.onload = checkImagesLoaded;
+        runFrame2.onload = checkImagesLoaded;
+        idleFrame.onload = checkImagesLoaded;
+        heartTexture.onload = checkImagesLoaded;
 
         let hearts = [];
         let player = { x: 270, width: 60, height: 20, moving: false };
@@ -78,12 +92,13 @@
             if (!gameActive) return;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            // Draw the player with the correct texture based on movement
             ctx.drawImage(player.moving ? (player.x % 2 === 0 ? runFrame1 : runFrame2) : idleFrame, player.x, canvas.height - 30, player.width, player.height);
 
             hearts.forEach((heart, index) => {
                 heart.y += heart.speed;
                 ctx.drawImage(heartTexture, heart.x - 10, heart.y - 10, heart.width, heart.height);
-                
+
                 if (heart.y > canvas.height - 30 && heart.x > player.x && heart.x < player.x + player.width) {
                     hearts.splice(index, 1);
                     score++;
@@ -125,7 +140,10 @@
         });
 
         setInterval(spawnHeart, 800);
-        update();
+
+        function startGame() {
+            update();
+        }
     </script>
 </body>
 </html>
