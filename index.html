@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Game for Hydra</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #5a189a, #9d4edd);
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            color: white;
+            overflow: hidden;
+        }
+        canvas {
+            background: url('your-texture.png'); /* Replace with your texture */
+            display: block;
+            margin: auto;
+        }
+        .note {
+            display: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            color: black;
+            font-size: 18px;
+            max-width: 400px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Catch the Hearts for a Surprise! 💜</h1>
+    <canvas id="gameCanvas"></canvas>
+    <div class="note" id="loveNote">
+        <p>Dear, Hydra. In that bar game when we first met, i instantly fell for you. I know, it was WAY too soon, so i shut up about it AND the fact that you were 16, turning 17 (WHICH I ASSUMED LIKE IN A MONTH OR SO AND IT WAS ACTUALLY NEXT YEAR LMFAO) and i immediately became a bit upset cause i thought we were never ever gonna date. Guess life proved me wrong. I think it was fate that brought us together. We kept seeing eachother multiple times and the one time i decided to call you, it was 27th December 2024, i instantly fell for you all over again. Your voice, your laughter, your flirting.. it felt SO GOOD hearing that coming out of your mouth to me, it was like it was meant to be. But of course, i overthinked and thought, "There's no way you'll date someone like me." ... I love you so much. So FREAKING much. I'm glad you told me how you felt, I love you to the multiverse and beyond, my star. 💖
+            </p>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 600;
+        canvas.height = 400;
+
+        let hearts = [];
+        let player = { x: 270, width: 60, height: 20 };
+        let score = 0;
+        let gameActive = true;
+
+        function spawnHeart() {
+            let heart = {
+                x: Math.random() * (canvas.width - 20),
+                y: 0,
+                width: 20,
+                height: 20,
+                speed: 2
+            };
+            hearts.push(heart);
+        }
+
+        function update() {
+            if (!gameActive) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "purple";
+            ctx.fillRect(player.x, canvas.height - 30, player.width, player.height);
+            hearts.forEach((heart, index) => {
+                heart.y += heart.speed;
+                ctx.fillStyle = "pink";
+                ctx.beginPath();
+                ctx.arc(heart.x, heart.y, 10, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (heart.y > canvas.height - 30 && heart.x > player.x && heart.x < player.x + player.width) {
+                    hearts.splice(index, 1);
+                    score++;
+                    if (score === 20) {
+                        gameActive = false;
+                        dropLoveNote();
+                    }
+                } else if (heart.y > canvas.height) {
+                    gameActive = false;
+                    alert("You missed a heart! Try again.");
+                    location.reload();
+                }
+            });
+            requestAnimationFrame(update);
+        }
+
+        function dropLoveNote() {
+            let note = document.getElementById("loveNote");
+            note.style.display = "block";
+            note.style.top = "-100px";
+            let yPos = -100;
+            function fall() {
+                if (yPos < 200) {
+                    yPos += 2;
+                    note.style.top = yPos + "px";
+                    requestAnimationFrame(fall);
+                }
+            }
+            fall();
+        }
+
+        document.addEventListener("mousemove", (event) => {
+            player.x = event.clientX - canvas.getBoundingClientRect().left - player.width / 2;
+        });
+
+        setInterval(spawnHeart, 800);
+        update();
+    </script>
+</body>
+</html>
